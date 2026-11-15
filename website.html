@@ -1,0 +1,79 @@
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Sleep Quality Predictor & Explorer</title>
+        <link rel="stylesheet" href="webii.css">
+    </head>
+    <body>
+    <main>
+      <h1>Sleep Quality Predictor</h1>
+      <p class="sub">Uses Python RandomClassifier to identify a sleep quality score from 1 to 10 :)</p>
+      
+      <div class="grid">
+        <!-- INPUT FORM -->
+        <form class="card" id="f">
+          <label>Occupation
+            <select name="occupation" id="occ">
+              <option value="Software Engineer">Software Engineer</options>
+              <option value="Doctor">Doctor</option>
+              <option value="Nurse">Nurse</option>
+              <option value="Teacher">Teacher</option>
+              <option value="Engineer">Engineer</option>
+              <option value="Accountant">Accountant</option>
+              <option value="Lawyer">Lawyer</option>
+              <option value="Salesperson">Salesperson</option>
+              <option value="Manager">Manager</option>
+              <option value="Scientist">Scientist</option>
+            </select>
+          </label>
+    
+          <label>Gender
+            <select name="gender" id="gen">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Prefer Not to Say">Prefer Not to Say</option>
+            </select>
+          </label>
+    
+          <label>Age
+            <input type="number" name="age" id="age" value="35" min="18" max="75">
+          </label>
+    
+          <label>Sleep Duration (hours)
+            <input type="number" name="duration" id="dur" value="7.2" min="3" max="12" step="0.1">
+          </label>
+    
+          <label>Stress Level (1–10)
+            <input type="number" name="stress" id="stress" value="5" min="1" max="10">
+          </label>
+    
+          <label>Daily Steps
+            <input type="number" name="steps" id="steps" value="7500" min="1000" max="20000" step="500">
+          </label>
+    
+          <label>Sleep Disorder
+            <select name="disorder" id="dis">
+              <option value="None">None</option>
+              <option value="Insomnia">Insomnia</option>
+              <option value="Sleep Apnea">Sleep Apnea</option>
+            </select>
+          </label>
+        </form>
+    
+        <section class="card" aria-live="polite">
+          <h2>Estimated Sleep Score</h2>
+          <div class="score-box">
+            <div class="score"><span id="score">7.5</span><small>/ 10</small></div>
+          </div>
+          <div class="dots" id="dots"></div>
+          
+          
+        </section>
+      </div>
+    </main>
+    
+    
+    </body>
+    </html>
