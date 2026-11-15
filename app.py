@@ -131,13 +131,12 @@ def predict():
             if gender == 'Female': 
                 score += 0.2
             elif gender == 'Male': 
-                score += 0.0  # neutral for male
+                score += 0.0
                 
-            # Adjusted disorder impact
             if disorder.lower() in ['insomnia']: 
                 score -= 1.2
             elif disorder.lower() in ['sleep apnea', 'sleep_apnea']: 
-                score -= 0.4  # Lighter penalty so doctors/professionals maintain high scores
+                score -= 0.4  
 
             if occupation in ['Engineer', 'Doctor', 'Lawyer', 'Software Engineer', 'Scientist']: 
                 score += 0.8
