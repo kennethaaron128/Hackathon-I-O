@@ -14,7 +14,7 @@ df['label'] = df['Quality of Sleep']
 
 vectorizer = CountVectorizer()
 
-X_nums = df[['Age', 'Daily Steps']]
+X_nums = df[['Age', 'Daily Steps', 'Sleep Duration']]
 X_vec = vectorizer.fit_transform(df['Occupation'] + df['Gender'] + df['Sleep Disorder'].fillna('None') ).toarray() 
 X = np.hstack([X_nums, X_vec])
 y = df['label']
@@ -22,12 +22,13 @@ y = df['label']
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X, y)
 
-Age = 27
-Daily_Steps = 5000
-Job = 'Teacher'
+Age = 45
+Daily_Steps = 10000
+Job = 'Engineer'
 Gender = 'Male'
-Sleep_Disorder = 'Sleep Apnea'
-new_nums = pd.DataFrame({'Age': [Age],'Daily Steps' : [Daily_Steps]}) 
+Sleep_Duration = 5
+Sleep_Disorder = 'None'
+new_nums = pd.DataFrame({'Age': [Age],'Daily Steps' : [Daily_Steps], 'Sleep_Duration': [Sleep_Duration]}) 
 new_vecs = vectorizer.transform([Job + Gender + Sleep_Disorder]).toarray() 
 new_input = np.hstack([new_nums,new_vecs])
 prediction = model.predict(new_input)
