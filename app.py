@@ -119,13 +119,12 @@ def predict():
 
                 input_df = pd.DataFrame([row_data])
                 prediction = model.predict(input_df)[0]
-                score = float(prediction)
+                score = round(prediction)
             except Exception as ex:
                 print("Model inference notice (using fallback):", ex)
                 score = None
 
         if score is None:
-            # Calibrated formula to hit ~8.0 for high-tier balanced profiles
             score = 7.5 + (duration - 7.0) * 0.9 + (steps - 6000) / 10000.0
             score -= (age - 35) * 0.01
             
@@ -139,8 +138,7 @@ def predict():
                 score -= 1.2
             elif disorder.lower() in ['sleep apnea', 'sleep_apnea']: 
                 score -= 0.4  # Lighter penalty so doctors/professionals maintain high scores
-                
-            # Stronger profession weight
+
             if occupation in ['Engineer', 'Doctor', 'Lawyer', 'Software Engineer', 'Scientist']: 
                 score += 0.8
             elif occupation in ['Salesperson', 'Nurse', 'Teacher']: 
