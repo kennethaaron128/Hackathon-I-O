@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
 import pandas as pd
 import sqlite3
 conn = sqlite3.connect('new_data.db')
@@ -19,11 +19,16 @@ X_vec = vectorizer.fit_transform(df['Occupation'] + df['Gender'] + df['Sleep Dis
 X = np.hstack([X_nums, X_vec])
 y = df['label']
 
-model = LogisticRegression(max_iter=100)
+model = LinearRegression()
 model.fit(X, y)
 
-new_nums = pd.DataFrame({'Age': [59],'Daily Steps' : [7000]}) 
-new_vecs = vectorizer.transform(['Engineer' + 'Male' + 'None']).toarray() 
+Age = 59
+Daily_Steps = 7000
+Job = 'Engineer'
+Gender = 'Male'
+Sleep_Disorder = 'None'
+new_nums = pd.DataFrame({'Age': [Age],'Daily Steps' : [Daily_Steps]}) 
+new_vecs = vectorizer.transform([Job + Gender + Sleep_Disorder]).toarray() 
 new_input = np.hstack([new_nums,new_vecs])
 prediction = model.predict(new_input)
 print(f'Estimated sleep quality (out of 10) : {prediction[0]}')
