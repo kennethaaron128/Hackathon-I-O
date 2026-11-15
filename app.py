@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Nov 15 15:10:29 2026
+
+@author: arwau
+"""
+
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import numpy as np
@@ -30,18 +37,17 @@ try:
                 return name
         return None
 
-    c_gender = find_col(['Gender', 'gender', 'sex'])
-    c_occupation = find_col(['Occupation', 'occupation'])
-    c_disorder = find_col(['Sleep Disorder', 'Sleep_Disorder', 'disorder'])
-    c_age = find_col(['Age', 'age'])
-    c_duration = find_col(['Sleep Duration', 'Sleep_Duration', 'duration'])
-    c_steps = find_col(['Daily Steps', 'Daily_Steps', 'steps'])
-    
-    # Flexible target column finder
+    c_gender = find_col(['Gender'])
+    c_occupation = find_col(['Occupation'])
+    c_disorder = find_col(['Sleep Disorder'])
+    c_age = find_col(['Age'])
+    c_duration = find_col(['Sleep Duration'])
+    c_steps = find_col(['Daily Steps'])
+
     c_target = find_col(['Quality of Sleep', 'Quality_of_Sleep', 'Sleep Quality', 'Sleep_Quality', 'Quality', 'score'])
 
     if not c_target:
-        # Fallback to the last numerical column if target name isn't found
+
         num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
         c_target = num_cols[-1] if num_cols else None
 
@@ -101,7 +107,6 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    try:
         data = request.get_json()
         
         age = float(data.get('age', 35))
@@ -111,38 +116,43 @@ def predict():
         occupation = data.get('occupation', '')
         gender = data.get('gender', 'Male')
 
-        score = None
-        if model is not None:
-            try:
-                row_data = {}
-                if col_mapping.get('occupation'): row_data[col_mapping['occupation']] = occupation
-                if col_mapping.get('gender'): row_data[col_mapping['gender']] = gender
-                if col_mapping.get('age'): row_data[col_mapping['age']] = age
-                if col_mapping.get('duration'): row_data[col_mapping['duration']] = duration
-                if col_mapping.get('steps'): row_data[col_mapping['steps']] = steps
-                if col_mapping.get('disorder'): row_data[col_mapping['disorder']] = disorder
+        import numpy as np
+        from sklearn.feature_extraction.text import CountVectorizer
+        from sklearn.model_selection import train_test_split
+        from sklearn.ensemble import RandomForestClassifier
+        import pandas as pd
+        import sqlite3
+        conn = sqlite3.connect('new_data.db')
 
-                input_df = pd.DataFrame([row_data])
-                prediction = model.predict(input_df)[0]
-                score = float(prediction)
-            except Exception as ex:
-                print("Model inference notice (using fallback):", ex)
-                score = None
+        #df = pd.DataFrame(dataset) for inside code
+        df = pd.read_csv("sleep.csv")
+        df.to_sql('Table', conn, if_exists='replace', index=False)
 
-        if score is None:
-            score = 7.0 + (duration - 7.0) * 0.7 + (steps - 6000) / 15000.0
-            score -= (age - 35) * 0.02
-            if gender == 'Female': score += 0.3
-            elif gender == 'Male': score -= 0.1
-            if disorder.lower() in ['insomnia']: score -= 1.8
-            elif disorder.lower() in ['sleep apnea', 'sleep_apnea']: score -= 1.4
-            if occupation in ['Engineer', 'Doctor', 'Lawyer', 'Software Engineer', 'Scientist']: score += 0.3
-            elif occupation in ['Salesperson', 'Nurse', 'Teacher']: score -= 0.2
+        df['label'] = df['Quality of Sleep']
 
-        final_score = float(np.clip(score, 1.0, 10.0))
-        return jsonify({'prediction': round(final_score, 1)})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
+        vectorizer = CountVectorizer()
+
+        X_nums = df[['Age', 'Daily Steps', 'Sleep Duration']]
+        X_vec = vectorizer.fit_transform(df['Occupation'] + df['Gender'] + df['Sleep Disorder'].fillna('None') ).toarray() 
+        X = np.hstack([X_nums, X_vec])
+        y = df['label'] 
+
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
+        model.fit(X, y)
+
+        Age = 32
+        Daily_Steps = 7500
+        Job = 'Doctor'
+        Gender = 'Male'
+        Sleep_Duration = 7
+        Sleep_Disorder = 'Sleep Apnea'
+        new_nums = pd.DataFrame({'Age': [Age],'Daily Steps' : [Daily_Steps], 'Sleep_Duration': [Sleep_Duration]}) 
+        new_vecs = vectorizer.transform([Job + ' ' + Gender + ' ' + Sleep_Disorder]).toarray() 
+        new_input = np.hstack([new_nums,new_vecs])
+        prediction = model.predict(new_input)
+        correct = prediction[0]
+        final_score = float(np.clip(correct, 1.0, 10.0))
+        return jsonify[({'prediction': round(final_score, 1)})]
 
 if __name__ == '__main__':
     app.run(debug=True)
