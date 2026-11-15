@@ -29,14 +29,14 @@ try:
                 return name
         return None
 
-    c_gender = find_col(['Gender', 'gender', 'sex'])
-    c_occupation = find_col(['Occupation', 'occupation'])
-    c_disorder = find_col(['Sleep Disorder', 'Sleep_Disorder', 'disorder'])
-    c_age = find_col(['Age', 'age'])
-    c_duration = find_col(['Sleep Duration', 'Sleep_Duration', 'duration'])
-    c_steps = find_col(['Daily Steps', 'Daily_Steps', 'steps'])
+    c_gender = find_col(['Gender'])
+    c_occupation = find_col(['Occupation'])
+    c_disorder = find_col(['Sleep Disorder'])
+    c_age = find_col(['Age'])
+    c_duration = find_col(['Sleep Duration'])
+    c_steps = find_col(['Daily Steps'])
     
-    c_target = find_col(['Quality of Sleep', 'Quality_of_Sleep', 'Sleep Quality', 'Sleep_Quality', 'Quality', 'score'])
+    c_target = find_col(['Quality of Sleep'])
 
     if not c_target:
         num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
